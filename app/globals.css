@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&family=DM+Mono:wght@300;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #1a1208;
+  --cream: #fdf9ed;
+  --cream-dark: #f5e4aa;
+  --sage: #4a7a4a;
+  --blush: #e87787;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #fdf9ed;
+  color: #1a1208;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Paper texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Star rating */
+.star-filled { color: #d4a232; }
+.star-empty { color: #e3d4b0; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #faf1d4; }
+::-webkit-scrollbar-thumb { background: #9ab89a; border-radius: 3px; }
+
+/* Book card hover */
+.book-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.book-card:hover {
+  transform: translateY(-4px) rotate(0.3deg);
+  box-shadow: 8px 12px 32px rgba(26, 18, 8, 0.15);
+}
+
+/* Progress bar animation */
+@keyframes fillBar {
+  from { width: 0; }
+  to { width: var(--target-width); }
+}
+.progress-fill {
+  animation: fillBar 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Fade in */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+/* Decorative underline */
+.fancy-underline {
+  text-decoration: none;
+  background: linear-gradient(#d4a232, #d4a232);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
+
+/* Quote style */
+.pull-quote {
+  border-left: 3px solid #4a7a4a;
+  padding-left: 1.5rem;
+  font-style: italic;
+}

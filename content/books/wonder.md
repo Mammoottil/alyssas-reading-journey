@@ -1,4 +1,4 @@
-
+---
 title: Wonder
 author: R. J. Palacio
 rating: 5

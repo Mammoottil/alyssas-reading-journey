@@ -116,7 +116,7 @@ export function getReadingGoal(): ReadingGoal {
   const read = books.filter(
     (b) => b.status === "read" && b.dateRead?.startsWith(String(year))
   ).length;
-  return { year, target: 24, current: read };
+  return { year, target: 100, current: read };
 }
 
 export function getStats() {

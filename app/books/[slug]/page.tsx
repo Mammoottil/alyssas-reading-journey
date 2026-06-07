@@ -9,7 +9,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const book = await getBookBySlug(slug);
+  const book = getBookBySlug(slug);
   return { title: book ? `${book.title} — Alyssa's Reading Journey` : "Book Not Found" };
 }
 
@@ -21,7 +21,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: string 
 
 export default async function BookDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const book = await getBookBySlug(slug);
+  const book = getBookBySlug(slug);
   if (!book) notFound();
 
   const sc = statusConfig[book.status];
@@ -115,13 +115,6 @@ export default async function BookDetailPage({ params }: { params: Promise<{ slu
             <p className="text-ink-500 text-lg">by {book.author}</p>
           </div>
 
-          {book.synopsis && (
-            <div>
-              <h2 className="font-serif text-xl font-bold text-ink-900 mb-3">Synopsis</h2>
-              <p className="text-ink-700 leading-relaxed">{book.synopsis}</p>
-            </div>
-          )}
-
           {book.review && (
             <div>
               <h2 className="font-serif text-xl font-bold text-ink-900 mb-3">My Review</h2>
@@ -131,13 +124,12 @@ export default async function BookDetailPage({ params }: { params: Promise<{ slu
             </div>
           )}
 
-          {book.contentHtml && (
+          {book.quote && (
             <div>
-              <h2 className="font-serif text-xl font-bold text-ink-900 mb-3">Notes</h2>
-              <div
-                className="prose prose-stone max-w-none text-ink-700 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: book.contentHtml }}
-              />
+              <h2 className="font-serif text-xl font-bold text-ink-900 mb-3">Quote</h2>
+              <blockquote className="border-l-4 border-sage-300 pl-5 text-ink-700 leading-relaxed italic">
+                {book.quote}
+              </blockquote>
             </div>
           )}
         </div>

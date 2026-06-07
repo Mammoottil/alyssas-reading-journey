@@ -1,10 +1,8 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { remark } from "remark";
-import html from "remark-html";
 
-const booksDir = path.join(process.cwd(), "content/books");
+const booksFile = path.join(process.cwd(), "content/books.json");
 const quotesDir = path.join(process.cwd(), "content/quotes");
 
 export interface Book {
@@ -19,10 +17,64 @@ export interface Book {
   dateStarted?: string;
   pages: number;
   pagesRead?: number;
-  synopsis: string;
   review?: string;
+  quote?: string;
   favorite: boolean;
-  contentHtml?: string;
+}
+
+interface BookJsonEntry {
+  slug: string;
+  title: string;
+  author: string;
+  status: Book["status"];
+  rating: number;
+  dateRead?: string;
+  dateStarted?: string;
+  genre: string | string[];
+  review?: string;
+  pages: number;
+  pagesRead?: number;
+  quote?: string;
+  favorite: boolean;
+  cover?: string;
+}
+
+function normalizeBook(entry: BookJsonEntry): Book {
+  const genre = Array.isArray(entry.genre) ? entry.genre : [entry.genre];
+  return {
+    slug: entry.slug,
+    title: entry.title,
+    author: entry.author,
+    cover: entry.cover ?? "",
+    genre,
+    status: entry.status,
+    rating: entry.rating,
+    dateRead: entry.dateRead || undefined,
+    dateStarted: entry.dateStarted || undefined,
+    pages: entry.pages,
+    pagesRead: entry.pagesRead,
+    review: entry.review || undefined,
+    quote: entry.quote || undefined,
+    favorite: entry.favorite,
+  };
+}
+
+function loadBooks(): Book[] {
+  if (!fs.existsSync(booksFile)) return [];
+  const raw = fs.readFileSync(booksFile, "utf8");
+  const entries = JSON.parse(raw) as BookJsonEntry[];
+  return entries.map(normalizeBook);
+}
+
+export function getAllBooks(): Book[] {
+  return loadBooks().sort((a, b) => {
+    if (a.dateRead && b.dateRead) return b.dateRead.localeCompare(a.dateRead);
+    return 0;
+  });
+}
+
+export function getBookBySlug(slug: string): Book | null {
+  return getAllBooks().find((book) => book.slug === slug) ?? null;
 }
 
 export interface Quote {
@@ -38,31 +90,6 @@ export interface ReadingGoal {
   year: number;
   target: number;
   current: number;
-}
-
-export function getAllBooks(): Book[] {
-  if (!fs.existsSync(booksDir)) return [];
-  const files = fs.readdirSync(booksDir).filter((f) => f.endsWith(".md"));
-  return files
-    .map((file) => {
-      const slug = file.replace(/\.md$/, "");
-      const raw = fs.readFileSync(path.join(booksDir, file), "utf8");
-      const { data } = matter(raw);
-      return { slug, ...data } as Book;
-    })
-    .sort((a, b) => {
-      if (a.dateRead && b.dateRead) return b.dateRead.localeCompare(a.dateRead);
-      return 0;
-    });
-}
-
-export async function getBookBySlug(slug: string): Promise<Book | null> {
-  const filePath = path.join(booksDir, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return null;
-  const raw = fs.readFileSync(filePath, "utf8");
-  const { data, content } = matter(raw);
-  const processed = await remark().use(html).process(content);
-  return { slug, ...data, contentHtml: processed.toString() } as Book;
 }
 
 export function getAllQuotes(): Quote[] {
